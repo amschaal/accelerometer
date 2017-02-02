@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html ng-app="YAAM">
+<head>
+    <title>Yet Another Activity Monitor</title>
+    <meta name="viewport" content="width=device-width">
+    <style>
+   	.line {
+	  fill: none;
+	  stroke: #000;
+	  stroke-width: 2px;
+	}
+	.x-line{
+	  fill: none;
+	  stroke: green;
+	}
+	.y-line{
+	  fill: none;
+	  stroke: blue;
+	}
+	.z-line{
+	  fill: none;
+	  stroke: red;
+	}
+    </style>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script src="angular.min.js"></script>
+    <script src="d3.v4.min.js"></script>
+</head>
+<body ng-controller="YAAMController as yaam">
+<svg width="350" height="400"></svg>
+
+<button ng-click='yaam.accelOff()' class="btn btn-primary">Clear Watch</button>
+
+<button onclick='navigator.app.exitApp()' class="btn btn-primary">Exit</button>
+<div>Avg Mag: {{yaam.accelAvgMag}}</div>
+<div>Accel: {{acceleration}}</div>
+
+<script src="viz.js"></script>
+<script type="text/javascript">
+    angular.module('YAAM', [])
+  .controller('YAAMController', function() {
+    var yaam = this;
+    var gWatchID = null;
+    var gOptions = { frequency: 50 }; 
+    yaam.onDeviceReady = function onDeviceReady() {
+        console.log('ready');
+        // hide Exit button. They don't have one on iOS devices.
+        if (device.platform === "iOS") {
+            //alert("got iOS:" + device.platform);
+            // http://www.mzcart.com/javascript-how-to-addremove-css-class-from-a-dom-element/
+            document.getElementById('exitApp').classList.add("hidden");
+            /* deals with post iOS 7 change that cover the status bar */
+            /* http://coenraets.org/blog/2013/09/phonegap-and-cordova-with-ios-7/ */
+            document.body.style.marginTop = "20px";
+        } else if (device.platform == 'Android') {
+            // Get rid of 300ms delay 
+            document.addEventListener('DOMContentLoaded', function() { FastClick.attach(document.body); }, false);
+        }
+        navigator.accelerometer.getCurrentAcceleration(accelUpdate, function() {alert("Error on getCurrentAccel");});
+        gWatchID = navigator.accelerometer.watchAcceleration(accelUpdate,
+                function() {
+                    alert("Error on watchAccel");
+                },
+                gOptions);
+    };
+    yaam.accelUpdate = function(acceleration) {
+	acceleration.magnitude = Math.sqrt(acceleration.x*acceleration.x+acceleration.y*acceleration.y+acceleration.z*acceleration.z)        
+	data.push(acceleration);
+	yaam.acceleration = acceleration;
+	yaam.accelAvgMag = d3.mean(data,function(d){return d.magnitude});
+//	console.log('data',data);
+	draw();
+    }
+    yaam.accelOff = function() {
+	alert('accel off');
+        navigator.accelerometer.clearWatch(gWatchID);
+    };
+//    document.addEventListener("deviceready", onDeviceReady, false); 
+    document.addEventListener("onload", yaam.onDeviceReady, false); 
+  });
+
+    //
+    
+</script>
+</body>
+</html>
