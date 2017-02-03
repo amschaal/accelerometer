@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
     <widget xmlns = "http://www.w3.org/ns/widgets"
         xmlns:gap   = "http://phonegap.com/ns/1.0"
-        id          = "com.schaal.adam.yaam"
+        id          = "com.schaal.accelerometer"
         version     = "0.1"
         versionCode = "1" >
 
-        <name>YAAM</name>
-        <description>Yet Another Activity Monitor</description>
+        <name>accelerometer</name>
+        <description>accelerometer</description>
         <author href="" email="amschaal@gmail.com">
         Adam
         </author>
